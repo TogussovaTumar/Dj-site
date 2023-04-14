@@ -1,0 +1,20 @@
+{% extends 'tour/base.html' %}
+{% block content %}
+<ul class="list-articles">
+    {% for t in tours %}
+        <li><div class="article-panel">
+    <p class="first">Category: {{t.cat}}</p>
+    <p class="last">Date: {{t.time_update|date:"d-m-Y H:i:s"}}</p>
+</div>
+{% if t.photo %}
+       <p><img class="img-article-left thumb" src="{{t.photo.url}}"></p>
+{% endif %}
+            <h2>{{t.name}}</h2>
+        <p>{{t.content|linebreaks}}</p>
+        <div class="clear"></div>
+        <p class="link-read-post"><a href="{{ t.get_absolute_url }}">More</a></p>
+        </li>
+    {% endfor %}
+
+</ul>
+{% endblock %}
