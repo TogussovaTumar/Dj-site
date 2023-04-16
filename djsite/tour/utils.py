@@ -1,16 +1,21 @@
+from django.core.cache import cache
 from django.db.models import Count
 
 from tour.models import *
 
 menu = [{ 'title': "About Site",'url_name': 'about'},
         { 'title': "Add tour",'url_name': 'add_page'},
-        { 'title': "Login",'url_name': 'login'},
+        { 'title': "Contact Us",'url_name': 'contact'},
 ]
 
 class DataMixin:
+    paginate_by = 3
     def get_user_context(self,**kwargs):
         context = kwargs
-        cats = Category.objects.annotate(Count('tour'))
+        cats = cache.get('cats')
+        if not cats:
+            cats = Category.objects.annotate(Count('tour'))
+            cache.set('cats', cats, 60)
 
         user_menu = menu.copy()
         if not self.request.user.is_authenticated:
