@@ -11,6 +11,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('tour.urls')),
     path('captcha/', include('captcha.urls')),
+    path('api/v1/tourlist/', TourApiView.as_view())
 
 ]
 if settings.DEBUG:

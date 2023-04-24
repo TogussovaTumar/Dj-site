@@ -1,19 +1,47 @@
 from django.contrib.auth import logout, login
 from django.contrib.auth.views import LoginView
 from django.core.paginator import Paginator
+from django.forms import model_to_dict
 from django.http import HttpResponse, HttpResponseNotFound, Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, FormView
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from tour.serializers import TourSerializer
+
 from .forms import *
 from .models import *
 from .utils import DataMixin,menu
 from django.contrib.auth.mixins import  LoginRequiredMixin
-
+from rest_framework import generics
 
 
 def user_context(title):
     pass
+
+
+class TourApiView(APIView):
+    def get(self,request):
+        t = Tour.objects.all()
+        return Response({'tours': TourSerializer(t, many=True).data})
+
+    def post(self,request):
+        serializer = TourSerializer(data = request.data)
+        serializer.is_valid(raise_exception=True)
+
+        post_new = Tour.objects.create(
+            name=request.data['name'],
+            content=request.data['content'],
+            cat_id=request.data['cat_id']
+        )
+        return Response({'tours': TourSerializer(post_new).data})
+
+
+# class TourApiView(generics.ListAPIView):
+#     queryset = Tour.objects.all()
+#     serializer_class = TourSerializer
 
 
 class TourHome(DataMixin,ListView):

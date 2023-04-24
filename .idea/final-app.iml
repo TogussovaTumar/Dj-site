@@ -5,8 +5,9 @@
       <sourceFolder url="file://$MODULE_DIR$/djsite" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/djsite/djsite" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/venv" />
+      <excludeFolder url="file://$MODULE_DIR$/venvs" />
     </content>
-    <orderEntry type="inheritedJdk" />
+    <orderEntry type="jdk" jdkName="Python 3.10 (final-app)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>

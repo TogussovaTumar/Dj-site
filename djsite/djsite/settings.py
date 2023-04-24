@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'tour.apps.TourConfig',
     'debug_toolbar',
     'captcha',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
