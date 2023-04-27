@@ -6,42 +6,32 @@ from django.http import HttpResponse, HttpResponseNotFound, Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, FormView
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.decorators import action
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.viewsets import GenericViewSet
 
 from tour.serializers import TourSerializer
 
 from .forms import *
 from .models import *
-from .utils import DataMixin,menu
+from .permissions import IsOwnerOrReadOnly
+from .utils import DataMixin, menu
 from django.contrib.auth.mixins import  LoginRequiredMixin
-from rest_framework import generics
+from rest_framework import generics, viewsets, mixins
 
 
-def user_context(title):
-    pass
-
-
-class TourApiView(APIView):
-    def get(self,request):
-        t = Tour.objects.all()
-        return Response({'tours': TourSerializer(t, many=True).data})
-
-    def post(self,request):
-        serializer = TourSerializer(data = request.data)
-        serializer.is_valid(raise_exception=True)
-
-        post_new = Tour.objects.create(
-            name=request.data['name'],
-            content=request.data['content'],
-            cat_id=request.data['cat_id']
-        )
-        return Response({'tours': TourSerializer(post_new).data})
-
-
-# class TourApiView(generics.ListAPIView):
-#     queryset = Tour.objects.all()
-#     serializer_class = TourSerializer
+def bad_request(request, exception=None):
+    return render(request,'tour/errors/error400.html')
+def permission_denied(request, exception=None):
+    return render(request,'tour/errors/error404.html', {})
+def page_not_found(request,exception):
+    return render(request, 'tour/errors/error404.html', {})
+def server_error(request,exception=None):
+    return render(request,'tour/errors/error500.html',{})
 
 
 class TourHome(DataMixin,ListView):
@@ -57,6 +47,102 @@ class TourHome(DataMixin,ListView):
 
     def get_queryset(self):
         return Tour.objects.filter(is_published=True).select_related('cat')
+
+
+class TourAPIListPagination(PageNumberPagination):
+    page_size =3
+    page_size_query_param = 'page_size'
+    max_page_size = 10000
+class TourAPIList(generics.ListCreateAPIView):
+    queryset = Tour.objects.all()
+    serializer_class = TourSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+    pagination_class = TourAPIListPagination
+
+
+class TourAPIUpdate(generics.RetrieveUpdateAPIView):
+    queryset = Tour.objects.all()
+    serializer_class = TourSerializer
+    permission_classes = (IsOwnerOrReadOnly,)
+    # authentication_classes = (TokenAuthentication,)
+
+
+# class TourViewSet(mixins.CreateModelMixin,
+#                   mixins.RetrieveModelMixin,
+#                   mixins.UpdateModelMixin,
+#                   mixins.DestroyModelMixin,
+#                   mixins.ListModelMixin,
+#                   GenericViewSet):
+#     # queryset = Tour.objects.all()
+#     serializer_class = TourSerializer
+#
+#     def get_queryset
+#     (self):
+#         pk = self.kwargs.get("pk")
+#         if not pk:
+#             return Tour.objects.all()[:3]
+#
+#         return Tour.objects.filter(pk=pk)
+#
+#     @action(methods=['get'],detail=True)
+#     def category(self,request,pk=None):
+#         cats = Category.objects.get(pk=pk)
+#         return Response({'cats': cats.name})
+
+
+# class TourAPIDetailView(generics.RetrieveUpdateDestroyAPIView):
+#     queryset = Tour.objects.all()
+#     serializer_class = TourSerializer
+
+# class TourApiView(APIView):
+#     def get(self,request):
+#         t = Tour.objects.all()
+#         return Response({'tours': TourSerializer(t, many=True).data})
+#
+#     def post(self,request):
+#         serializer = TourSerializer(data = request.data)
+#         serializer.is_valid(raise_exception=True)
+#         serializer.save()
+#
+#         return Response({'tours': serializer.data})
+#
+#     def put(self,request, *args, **kwargs):
+#         pk = kwargs.get("pk", None)
+#         if not pk:
+#             return Response({"error": "Method PUT"})
+#
+#         try:
+#             instance = Tour.objects.get(pk=pk)
+#         except:
+#             return Response({"error": "Method PUT"})
+#
+#         serializer = TourSerializer(data = request.data, instance=instance)
+#         serializer.is_valid(raise_exception= True)
+#         serializer.save()
+#         return Response({"tour": serializer.data})
+#
+#     def delete(self,request,*args,**kwargs):
+#         pk = kwargs.get("pk",None)
+#         if not pk:
+#             return Response({"error": "Method DELETE"})
+#
+#
+#
+#         return Response({"tour": "delete tour "+str(pk)})
+
+
+
+
+
+# class TourApiView(generics.ListAPIView):
+#     queryset = Tour.objects.all()
+#     serializer_class = TourSerializer
+
+
+class TourAPIDestroy(generics.RetrieveDestroyAPIView):
+    queryset = Tour.objects.all()
+    serializer_class = TourSerializer
+    permission_classes = (IsAdminUser,)
 
 # def index(request):
 #     tours = Tour.objects.all()

@@ -8,7 +8,7 @@ html, body {
 }
 
 a {
-	color: #0059b2;
+	color: white;
 	text-decoration: none;
 }
 a:hover {
@@ -103,11 +103,11 @@ ul.mainmenu li.logo {margin: 0;}
 ul.mainmenu li.last {float: right;}
 
 ul.mainmenu li a {
-	color: #fdc073;
+	color: white;
 	text-decoration: none;
 }
 ul.mainmenu li a:hover {
-	color: #FDA83D;
+	color: #white;
 }
 
 .panelitems {

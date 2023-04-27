@@ -1,5 +1,7 @@
+from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
+
 
 
 class Tour(models.Model):
@@ -13,6 +15,7 @@ class Tour(models.Model):
     time_update = models.DateTimeField(auto_now=True, verbose_name="Updated time")
     is_published = models.BooleanField(default=True,)
     cat = models.ForeignKey('Category', on_delete=models.PROTECT, verbose_name="Region")
+    user = models.ForeignKey(User, verbose_name = 'User', on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name

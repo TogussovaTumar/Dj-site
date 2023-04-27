@@ -1,5 +1,6 @@
 import io
 
+import json
 from rest_framework import serializers
 from rest_framework.parsers import JSONParser
 from rest_framework.renderers import JSONRenderer
@@ -11,17 +12,17 @@ from tour.models import Tour
 #     def __init__(self,title,content):
 #         self.title = title
 #         self.content = content
-class TourSerializer(serializers.Serializer):
-    name = serializers.CharField(max_length=255)
-    content = serializers.CharField()
-    # photo = serializers.ImageField()
-    price = serializers.CharField(max_length=255)
-    country = serializers.CharField()
-    # slug = serializers.SlugField()
-    time_create = serializers.DateTimeField(read_only=True)
-    time_update = serializers.DateTimeField(read_only=True)
-    is_published = serializers.BooleanField(default=True)
-    cat_id = serializers.IntegerField()
+class TourSerializer(serializers.ModelSerializer):
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    class Meta:
+        model = Tour
+        fields = "__all__"
+
+
+
+
+
+
 
 # def encode():
 #     model = TourModel('Burabay', 'Content: Burabay')
